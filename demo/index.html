@@ -38,7 +38,8 @@
       en: {beta:'INTERACTIVE DEMO',kicker:'Try the real card',headline:'A shared dashboard.<br><span>Your own home.</span>',intro:'Explore a fictional Home Assistant setup. Inspect the dashboard, map its missing entities, and preview a clean export. Everything stays in your browser.',try:'Explore the demo ↓',install:'Install with HACS ↗',title:'Try it yourself',subtitle:'A shared dashboard sample meets fictional entities from another home.',steps:['01 · Inspect','02 · Map','03 · Preview'],map:'Apply example mappings',reset:'Reset',privacy:'Fictional devices only. No Home Assistant connection and no dashboard file is uploaded.',features:[['See every dependency','Spot explicit entity references, unavailable states, and custom cards across views.'],['Choose each replacement','Suggestions help, but you decide what belongs in your home.'],['Export with confidence','Compare the source and adapted file before downloading a copy.']],footer:'Dashboard Adapter · Public beta · Demo data is fictional',docs:'Documentation',feedback:'Feedback'},
       fr: {beta:'DÉMO INTERACTIVE',kicker:'Essaie la vraie carte',headline:'Un dashboard partagé.<br><span>Adapté à ta maison.</span>',intro:'Explore une installation Home Assistant fictive. Vérifie le dashboard, associe les entités absentes et visualise le fichier corrigé. Tout reste dans ton navigateur.',try:'Explorer la démo ↓',install:'Installer avec HACS ↗',title:'À toi de jouer',subtitle:'Un dashboard exemple face aux entités fictives d’une autre maison.',steps:['01 · Vérifier','02 · Associer','03 · Aperçu'],map:'Appliquer des exemples',reset:'Réinitialiser',privacy:'Appareils fictifs uniquement. Aucune connexion Home Assistant, aucun fichier envoyé.',features:[['Toutes les dépendances','Repère les entités, états indisponibles et cartes personnalisées dans chaque vue.'],['Chaque choix t’appartient','Les suggestions aident, mais tu choisis ce qui correspond à ta maison.'],['Un export à vérifier','Compare le fichier original et sa copie adaptée avant téléchargement.']],footer:'Dashboard Adapter · Bêta publique · Données fictives',docs:'Documentation',feedback:'Retours'}
     };
-    let language = new URLSearchParams(location.search).get('lang') === 'fr' ? 'fr' : 'en';
+    let language = new URLSearchParams(location.search).get('lang') || document.documentElement.lang || 'en';
+    if (!['en', 'fr'].includes(language)) language = 'en';
     function copy() {
       const t = labels[language];
       document.documentElement.lang = language;
@@ -59,6 +60,13 @@
       document.getElementById('docs-link').textContent = t.docs;
       document.getElementById('feedback-link').textContent = t.feedback;
       document.getElementById('language').textContent = language === 'en' ? 'FR' : 'EN';
+      document.getElementById('language').setAttribute('aria-label', language === 'en' ? 'Switch to French' : 'Passer en anglais');
+      document.getElementById('theme').setAttribute('aria-label', language === 'en' ? 'Switch theme' : 'Changer de thème');
+      document.querySelector('.demo-toolbar').setAttribute('aria-label', language === 'en' ? 'Demo steps' : 'Étapes de démonstration');
+      document.querySelector('.features').setAttribute('aria-label', language === 'en' ? 'Features' : 'Fonctionnalités');
+      document.querySelector('.brand').setAttribute('aria-label', language === 'en' ? 'Dashboard Adapter home' : 'Accueil Dashboard Adapter');
+      document.getElementById('docs-link').href = 'https://github.com/SkyTyphon/dashboard-adapter/blob/main/' + (language === 'fr' ? 'README.fr.md' : 'README.md');
+      document.getElementById('install-link').href = language === 'fr' ? 'https://github.com/SkyTyphon/dashboard-adapter/blob/main/README.fr.md#installation-avec-hacs' : 'https://github.com/SkyTyphon/dashboard-adapter#install-with-hacs';
       card.setConfig({ language });
       card.hass = { language, states };
     }
@@ -70,7 +78,11 @@
     document.querySelectorAll('[data-step]').forEach((button) => button.addEventListener('click', () => step(button.dataset.step)));
     document.getElementById('example-map').addEventListener('click', () => { card.mappings = { 'light.living_room': 'light.salon', 'sensor.living_room_temperature': 'sensor.salon_temperature', 'switch.coffee_machine': 'switch.coffee_maker', 'light.bedroom': 'light.chambre' }; step('preview'); });
     document.getElementById('reset').addEventListener('click', () => { card.loadDemo(); step('dependencies'); });
-    document.getElementById('language').addEventListener('click', () => { language = language === 'en' ? 'fr' : 'en'; copy(); });
+    document.getElementById('language').addEventListener('click', () => {
+      language = language === 'en' ? 'fr' : 'en';
+      if (/\/(en|fr)\/(index\.html)?$/.test(location.pathname)) location.href = '../' + language + '/index.html';
+      else { copy(); const url = new URL(location.href); url.searchParams.set('lang', language); history.replaceState(null, '', url); }
+    });
     document.getElementById('theme').addEventListener('click', () => { document.body.classList.toggle('light'); document.getElementById('theme').textContent = document.body.classList.contains('light') ? '☾' : '☼'; });
     copy(); card.loadDemo();
   </script>

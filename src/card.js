@@ -1,5 +1,5 @@
 import { parseDashboard, analyzeDashboard, suggestEntities, applyMappings } from './dashboard.js';
-import { translate } from './i18n.js';
+import { translate, translateError } from './i18n.js';
 import { demoText, demoStates } from './demo.js';
 import { styles } from './styles.js';
 
@@ -20,6 +20,7 @@ class DashboardAdapterCard extends HTMLElement {
   }
 
   setConfig(config) {
+    if (config?.language && !['auto', 'en', 'fr'].includes(config.language)) throw new Error('language: auto, en, fr');
     this.config = config || {};
     this.render();
   }
@@ -31,7 +32,10 @@ class DashboardAdapterCard extends HTMLElement {
     this._hass = hass;
     if (!previous || previous.states !== hass.states || previous.language !== hass.language) this.render();
   }
-  get language() { return this.config?.language || this._hass?.language || navigator.language; }
+  get language() {
+    const configured = this.config?.language;
+    return configured && configured !== 'auto' ? configured : this._hass?.language || navigator.language;
+  }
   get states() { return this.demo ? demoStates : this._hass?.states || {}; }
 
   async loadFile(file) {
@@ -45,7 +49,7 @@ class DashboardAdapterCard extends HTMLElement {
       this.demo = false;
       this.activeTab = 'dependencies';
     } catch (error) {
-      this.error = error.message;
+      this.error = translateError(error.message, this.language);
     }
     this.render();
   }
@@ -93,17 +97,17 @@ class DashboardAdapterCard extends HTMLElement {
         </div>
         <div class="status-line"><span class="good">● ${ready} ${t.ready}</span><span class="bad">● ${missing} ${t.missing}</span><span class="warn">● ${unavailable} ${t.unavailable}</span></div>
       </div>
-      <div class="tabs" role="tablist" aria-label="Dashboard analysis">
+      <div class="tabs" role="tablist" aria-label="${t.analysis}">
         ${['dependencies','mapping','preview'].map((tab) => `<button type="button" role="tab" aria-selected="${this.activeTab === tab}" data-tab="${tab}">${t[tab]}${tab === 'mapping' ? ` <small>${resolved}/${missing}</small>` : ''}</button>`).join('')}
       </div>
       <div class="panel" role="tabpanel">${this.renderTab(report, t)}</div>` : `<div class="empty"><div class="empty-icon">▦</div><p>${t.noDashboard}</p><button type="button" data-action="demo">${t.demo} →</button></div>`;
     this.shadowRoot.innerHTML = `<style>${styles}</style><ha-card><div class="shell">
-      <header><div class="brand"><div class="logo">◈</div><span>Dashboard Adapter</span><span class="version">BETA</span></div><div class="privacy">◆ ${t.privacy}</div></header>
+      <header><div class="brand"><div class="logo">◈</div><span>Dashboard Adapter</span><span class="version">${t.beta}</span></div><div class="privacy">◆ ${t.privacy}</div></header>
       <section class="hero"><div><div class="eyebrow">${t.eyebrow}</div><h1>${t.title}</h1><p>${t.subtitle}</p></div><div class="hero-art" aria-hidden="true"><div class="art-card art-a">▥ <i></i><i></i><i></i></div><div class="art-link">⋯ ⋯ ⋯</div><div class="art-card art-b">✓ <i></i><i></i><i></i></div></div></section>
       <section class="workspace"><div class="toolbar"><div class="file"><b>${this.parsed ? escape(this.filename) : t.filename}</b>${this.demo ? `<span class="demo-pill">${t.demoLabel}</span>` : ''}</div><div class="actions"><label class="import-button">${t.import}<input type="file" accept=".yaml,.yml,.json,application/json,text/yaml" aria-label="${t.import}"></label><button type="button" data-action="demo">${t.demo}</button>${this.parsed ? `<button type="button" data-action="reset">${t.reset}</button>` : ''}</div></div>
       ${this.error ? `<div class="error" role="alert">${t.fileError}: ${escape(this.error)}</div>` : ''}
       ${!this._hass && !this.demo ? `<div class="notice">${t.noHass}</div>` : ''}
-      ${dash}</section><footer>Dashboard Adapter <span>●</span> Local-first dashboard migration</footer>
+      ${dash}</section><footer>Dashboard Adapter <span>●</span> ${t.footer}</footer>
       </div></ha-card>`;
     this.bind();
   }

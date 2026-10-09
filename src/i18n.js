@@ -1,5 +1,6 @@
 const messages = {
   en: {
+    beta: 'BETA', analysis: 'Dashboard analysis', footer: 'Adapt dashboards locally', syntaxError: 'Invalid YAML or JSON. Check the file syntax and duplicate keys.', sizeError: 'File exceeds the 2 MB limit.', structureError: 'Expected a complete dashboard with a views array.',
     eyebrow: 'DASHBOARD PORTABILITY STUDIO', title: 'Make a shared dashboard yours.',
     subtitle: 'Inspect dependencies, match missing entities, and export a clean copy. Your Home Assistant configuration is never changed.',
     import: 'Import dashboard', demo: 'Try demo', drop: 'Drop a YAML or JSON dashboard here',
@@ -17,6 +18,7 @@ const messages = {
     reset: 'Clear', invalidMapping: 'Choose an existing entity from the same domain.', previewNote: 'Only explicit entity fields are changed. Review the exported YAML or JSON before importing it into Home Assistant.',
   },
   fr: {
+    beta: 'BÊTA', analysis: 'Analyse du dashboard', footer: 'Adapter les dashboards localement', syntaxError: 'YAML ou JSON invalide. Vérifie la syntaxe du fichier et les clés en double.', sizeError: 'Le fichier dépasse la limite de 2 Mo.', structureError: 'Le fichier doit contenir un dashboard complet avec un tableau views.',
     eyebrow: 'ATELIER DE PORTABILITÉ', title: 'Adapte un dashboard partagé à ta maison.',
     subtitle: 'Vérifie les dépendances, associe les entités absentes et exporte une copie corrigée. La configuration de Home Assistant reste intacte.',
     import: 'Importer un dashboard', demo: 'Essayer la démo', drop: 'Dépose ici un dashboard YAML ou JSON',
@@ -37,4 +39,11 @@ const messages = {
 
 export function translate(language) {
   return messages[language?.toLowerCase().startsWith('fr') ? 'fr' : 'en'];
+}
+
+export function translateError(message, language) {
+  const t = translate(language);
+  if (message.includes('2 MB limit')) return t.sizeError;
+  if (message.includes('views array')) return t.structureError;
+  return t.syntaxError;
 }

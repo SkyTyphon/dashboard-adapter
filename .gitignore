@@ -3,3 +3,5 @@ coverage/
 .DS_Store
 preview/.chrome-light/
 demo/dashboard-adapter.js
+demo/en/
+demo/fr/
