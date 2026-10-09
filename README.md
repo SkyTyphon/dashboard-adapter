@@ -8,6 +8,8 @@ Dashboard Adapter is a browser-only Lovelace card. Import a YAML or JSON dashboa
 
 > Screenshot: the real JavaScript card running in a local browser preview with fictional demo states. Home Assistant integration has not yet been validated on a live instance.
 
+**[Try the interactive demo](https://skytyphon.github.io/dashboard-adapter/)** — inspect fictional devices, apply example mappings, switch theme/language and download an adapted sample. The demo uses the real bundled card without a Home Assistant connection.
+
 ## Why this exists
 
 Shared dashboards are often difficult to reuse because entity IDs and custom cards differ between homes. Linked Cards focuses on reusable, synchronized card templates and linked sections. Dashboard Adapter tackles the **whole imported dashboard**: inspect its dependencies, adapt explicit entity references, then export a reviewed copy. It does not implement linked templates or live synchronization.
@@ -66,6 +68,8 @@ The imported dashboard is parsed in your browser only. No dashboard data is uplo
 Requires Node.js. Run `npm ci`, then `npm run check`. `npm run check` runs unit tests, bundles the card, and checks the HACS artifact. Source lives in `src/`; `dist/dashboard-adapter.js` is the distributable file.
 
 For a local UI preview, run `node scripts/preview-server.mjs` and open `http://127.0.0.1:4173/`. The preview uses fictional states. It is not an integration test inside Home Assistant.
+
+Run `npm run test:browser` for the interactive demo smoke test (requires local Chrome). It checks desktop/mobile layout, example mapping, export download, French, and light theme.
 
 ## FAQ
 

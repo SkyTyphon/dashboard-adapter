@@ -2,3 +2,4 @@ node_modules/
 coverage/
 .DS_Store
 preview/.chrome-light/
+demo/dashboard-adapter.js

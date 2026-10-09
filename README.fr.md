@@ -8,6 +8,8 @@ Cette carte Lovelace fonctionne dans le navigateur, sans Python. Elle importe un
 
 La capture montre la vraie carte JavaScript avec des données de démonstration fictives ; elle ne prouve pas encore un test dans Home Assistant.
 
+**[Essaie la démo interactive](https://skytyphon.github.io/dashboard-adapter/)** : appareils fictifs, correspondances exemples, bascules de langue et de thème, puis téléchargement d’une copie adaptée. La vraie carte JavaScript fonctionne sans connexion Home Assistant dans cette démo.
+
 ## Installation
 
 Ajoute `https://github.com/SkyTyphon/dashboard-adapter` dans **HACS → Dépôts personnalisés → Dashboard**, puis ajoute cette carte :
