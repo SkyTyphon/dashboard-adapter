@@ -6,8 +6,9 @@ import { chromium } from 'playwright-core';
 const chrome = process.env.CHROME_PATH || (process.platform === 'win32' ? 'C:/Program Files/Google/Chrome/Application/chrome.exe' : '/usr/bin/google-chrome');
 if (!existsSync(chrome)) throw new Error(`Chrome not found at ${chrome}. Set CHROME_PATH.`);
 const port = 4174;
-const origin = `http://127.0.0.1:${port}`;
-const server = spawn(process.execPath, ['scripts/preview-server.mjs'], {
+const liveUrl = process.env.DEMO_URL;
+const origin = liveUrl ? liveUrl.replace(/\/$/, '') : `http://127.0.0.1:${port}`;
+const server = liveUrl ? null : spawn(process.execPath, ['scripts/preview-server.mjs'], {
   env: { ...process.env, DASHBOARD_ADAPTER_PREVIEW_PORT: String(port) },
   stdio: 'ignore',
 });
@@ -15,7 +16,7 @@ let browser;
 try {
   let available = false;
   for (let attempt = 0; attempt < 40; attempt++) {
-    try { const response = await fetch(`${origin}/demo/index.html`); available = response.ok; if (available) break; } catch {}
+    try { const response = await fetch(liveUrl ? origin : `${origin}/demo/index.html`); available = response.ok; if (available) break; } catch {}
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
   assert(available, 'Local demo server did not start');
@@ -23,7 +24,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 }, acceptDownloads: true });
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto(`${origin}/demo/index.html`, { waitUntil: 'networkidle' });
+  await page.goto(liveUrl ? `${origin}/` : `${origin}/demo/index.html`, { waitUntil: 'networkidle' });
   await page.locator('dashboard-adapter-card .entity-row').first().waitFor();
   assert.equal(await page.locator('dashboard-adapter-card .entity-row').count(), 5);
   assert.match(await page.locator('dashboard-adapter-card .status-line').innerText(), /4 Missing/);
@@ -50,5 +51,5 @@ try {
   console.log('Browser demo: desktop, mapping, download, French, light theme and mobile passed');
 } finally {
   await browser?.close();
-  server.kill();
+  server?.kill();
 }
