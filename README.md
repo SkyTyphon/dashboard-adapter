@@ -1,6 +1,14 @@
 # Dashboard Adapter
 
-**[Français](README.fr.md) · [English demo](https://skytyphon.github.io/dashboard-adapter/en/) · [French demo](https://skytyphon.github.io/dashboard-adapter/fr/) · [Buy me a coffee](https://buymeacoffee.com/skytyphoni)**
+**[Readme Français](README.fr.md)**
+
+If you want to try a demo, test it here: **[Demo](https://skytyphon.github.io/dashboard-adapter/en/)**.
+
+If you like my work:
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/skytyphoni)
+
+[![Open HACS repository](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SkyTyphon&repository=dashboard-adapter&category=plugin)
 
 **Reuse a shared Home Assistant dashboard with your own devices.**
 
@@ -26,6 +34,10 @@ Open the [English demo](https://skytyphon.github.io/dashboard-adapter/en/). Clic
 The [French demo](https://skytyphon.github.io/dashboard-adapter/fr/) offers the same features. Each page has a language switch and a light/dark theme switch.
 
 ## Install with HACS
+
+Click **[Open HACS repository](https://my.home-assistant.io/redirect/hacs_repository/?owner=SkyTyphon&repository=dashboard-adapter&category=plugin)** to open this repository in your Home Assistant. HACS must already be installed. On your first visit, My Home Assistant asks for your instance address.
+
+You can also add it manually:
 
 1. In HACS, open **Custom repositories**.
 2. Add `https://github.com/SkyTyphon/dashboard-adapter` with category **Dashboard**.

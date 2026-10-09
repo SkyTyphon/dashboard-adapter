@@ -1,6 +1,14 @@
 # Dashboard Adapter
 
-**[English](README.md) · [Démo française](https://skytyphon.github.io/dashboard-adapter/fr/) · [Démo anglaise](https://skytyphon.github.io/dashboard-adapter/en/) · [M’offrir un café](https://buymeacoffee.com/skytyphoni)**
+**[Readme English](README.md)**
+
+Si vous voulez essayer une démo, testez-la ici : **[Démo](https://skytyphon.github.io/dashboard-adapter/fr/)**.
+
+Si vous aimez mon travail :
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/skytyphoni)
+
+[![Open HACS repository — ouvrir le dépôt dans HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SkyTyphon&repository=dashboard-adapter&category=plugin)
 
 **Reprends un dashboard Home Assistant partagé avec tes propres appareils.**
 
@@ -26,6 +34,10 @@ Ouvre la [démo française](https://skytyphon.github.io/dashboard-adapter/fr/). 
 La [démo anglaise](https://skytyphon.github.io/dashboard-adapter/en/) propose les mêmes fonctions. Chaque page permet de changer de langue et de thème clair/sombre.
 
 ## Installation avec HACS
+
+Clique sur **[Open HACS repository](https://my.home-assistant.io/redirect/hacs_repository/?owner=SkyTyphon&repository=dashboard-adapter&category=plugin)** pour ouvrir ce dépôt dans ton Home Assistant. HACS doit déjà être installé. Au premier accès, My Home Assistant demande l’adresse de ton instance.
+
+Tu peux aussi l’ajouter manuellement :
 
 1. Dans HACS, ouvre **Dépôts personnalisés**.
 2. Ajoute `https://github.com/SkyTyphon/dashboard-adapter` en catégorie **Dashboard**.
