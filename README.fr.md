@@ -10,7 +10,7 @@ La capture montre la vraie carte JavaScript avec des données de démonstration 
 
 ## Installation
 
-Après publication du dépôt : **HACS → Dépôts personnalisés → Dashboard**, puis ajoute cette carte :
+Ajoute `https://github.com/SkyTyphon/dashboard-adapter` dans **HACS → Dépôts personnalisés → Dashboard**, puis ajoute cette carte :
 
 ```yaml
 type: custom:dashboard-adapter-card
@@ -31,4 +31,4 @@ La carte ne réécrit que les champs explicites d’entité : `entity`, `entity_
 
 ## Développement et statut
 
-`npm ci` puis `npm run check` exécutent les tests, la compilation et le contrôle du fichier HACS. `node scripts/preview-server.mjs` lance un aperçu local avec données fictives. Version bêta locale : tests dans Home Assistant et installation HACS réels encore à faire. Licence MIT proposée, à valider avant publication.
+`npm ci` puis `npm run check` exécutent les tests, la compilation et le contrôle du fichier HACS. `node scripts/preview-server.mjs` lance un aperçu local avec données fictives. Code bêta public : tests dans Home Assistant et installation HACS réels encore à faire avant une version numérotée. Licence MIT.

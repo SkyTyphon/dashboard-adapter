@@ -27,7 +27,7 @@ Shared dashboards are often difficult to reuse because entity IDs and custom car
 
 This is a **HACS Dashboard plugin**, not a Home Assistant custom integration. It contains no Python.
 
-Once the GitHub repository is published, add it under **HACS → Custom repositories → Dashboard**, install it, then add the card to a dashboard:
+Add `https://github.com/SkyTyphon/dashboard-adapter` under **HACS → Custom repositories → Dashboard**, install it, then add the card to a dashboard:
 
 ```yaml
 type: custom:dashboard-adapter-card
@@ -91,4 +91,4 @@ For a local UI preview, run `node scripts/preview-server.mjs` and open `http://1
 
 ## Project status
 
-Local beta. Unit tests and browser preview passed; live Home Assistant and HACS installation are still to be tested before a public release. License: MIT (pending owner validation before publication).
+Public beta source. Unit tests, browser preview and CI passed; live Home Assistant and HACS installation are still to be tested before a tagged release. License: MIT.
