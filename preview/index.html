@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dashboard Adapter preview</title>
+<style>body{margin:0;background:#0b121b;padding:32px;font-family:Arial,sans-serif}dashboard-adapter-card{max-width:1160px;margin:auto}body.light{background:#e8edf2;--card-background-color:#fff;--secondary-background-color:#f4f7f9;--primary-text-color:#1e2b34;--secondary-text-color:#647781;--divider-color:#dbe3e8}@media(max-width:650px){body{padding:8px}}</style></head>
+<body><dashboard-adapter-card></dashboard-adapter-card><script type="module" src="../dist/dashboard-adapter.js"></script>
+<script type="module">
+await customElements.whenDefined('dashboard-adapter-card');
+const card = document.querySelector('dashboard-adapter-card');
+card.setConfig({ language: new URLSearchParams(location.search).get('lang') || 'en' });
+card.hass = { language: 'en', states: {
+  'light.salon': { state: 'on' }, 'light.chambre': { state: 'off' },
+  'sensor.salon_temperature': { state: '21.4' }, 'sensor.home_energy': { state: '8.2' },
+  'switch.coffee_maker': { state: 'off' }
+}};
+card.loadDemo();
+if (new URLSearchParams(location.search).has('light')) document.body.classList.add('light');
+</script></body></html>

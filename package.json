@@ -1,0 +1,17 @@
+{
+  "name": "dashboard-adapter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.js",
+    "check": "npm run test && npm run build && node scripts/check-package.mjs"
+  },
+  "dependencies": {
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.12"
+  }
+}
