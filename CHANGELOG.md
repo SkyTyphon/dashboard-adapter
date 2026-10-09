@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0-beta.4
 
 - Smarter replacement suggestions: friendly names and card `name` fields are compared, accents ignored, word prefixes matched, and rare words weigh more than common ones.
 - Replacement fields list friendly names and other entities of the same domain.

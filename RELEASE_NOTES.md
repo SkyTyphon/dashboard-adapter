@@ -1,24 +1,15 @@
-# v0.1.0-beta.3
+# v0.1.0-beta.4
 
-Reliability beta of Dashboard Adapter, a browser-only Lovelace card for adapting shared Home Assistant dashboards.
+Smarter replacement suggestions for Dashboard Adapter, a browser-only Lovelace card for adapting shared Home Assistant dashboards.
 
-Fixes:
+- Suggestions compare the missing reference (its ID and the `name` given in the card) with the ID and friendly name of each entity of the same domain.
+- Accents are ignored and word prefixes match (`temp` finds `temperature`).
+- Rare words, such as a device name, weigh more than common ones such as `status` or `battery`; words that none of your entities use are left out.
+- Replacement fields show friendly names, then other entities of the same domain so they can be filtered by typing.
+- A one-click **Suggestion** link appears only when one entity clearly stands out.
 
-- The replacement being typed, the focus and the scroll position are no longer lost when Home Assistant pushes state updates.
-- YAML anchors, aliases and merge keys (`&name`, `*name`, `<<:`) are rewritten correctly instead of failing at export.
-- Unresolved YAML tags such as `!include` and `!secret` are refused with a clear, translated message.
-- Export errors are shown in the preview, translated, and export is disabled until they are fixed.
-- Card count no longer includes tile features or picture elements.
-- button-card JavaScript templates (`[[[ ]]]`) are detected alongside Jinja.
-
-Improvements:
-
-- Present and unavailable entities can also be replaced from a secondary list in **Entity mapping**.
-- New **Copy** button, useful in the Home Assistant mobile app and over plain HTTP.
-- Analysis and preview are cached between redraws.
-- Accent colors adapt to light Home Assistant themes.
-- English and French guides updated.
+Measured on a real 167-entity dashboard: when an entity was renamed with a `_2` suffix, the right one was ranked first 155 times and always in the top three, and every one-click suggestion shown (114) was correct.
 
 Demos: https://skytyphon.github.io/dashboard-adapter/en/ and https://skytyphon.github.io/dashboard-adapter/fr/
 
-Automated unit, browser and HACS repository validation checks pass. This beta has **not** yet been installed on a live Home Assistant instance. Template expressions, custom card-specific fields and resource installation need manual review. Back up any dashboard before importing the adapted copy.
+Suggestions are not confirmed device matches: a removed device can leave entities with the same name behind. Check each replacement and back up any dashboard before importing the adapted copy.
