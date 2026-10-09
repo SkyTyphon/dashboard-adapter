@@ -47,3 +47,12 @@ test('distinguishes unavailable from missing entities', () => {
   const report = analyzeDashboard({ views: [{ cards: [{ type: 'entities', entities: ['switch.new_plug', 'light.new_room', 'light.none'] }] }] }, states);
   assert.deepEqual(report.entities.map((entity) => entity.status), ['unavailable', 'ready', 'missing']);
 });
+
+test('rewrites an action target entity_id array', () => {
+  const parsed = parseDashboard('views:\n  - cards:\n      - type: button\n        tap_action:\n          target:\n            entity_id: [light.old_room, switch.old_plug]\n', 'a.yaml');
+  const report = analyzeDashboard(parsed.data, states);
+  assert.deepEqual(report.entities.map((entity) => entity.id), ['light.old_room', 'switch.old_plug']);
+  const output = applyMappings(parsed, { 'light.old_room': 'light.new_room' });
+  assert.match(output.text, /light\.new_room/);
+  assert.match(output.text, /switch\.old_plug/);
+});

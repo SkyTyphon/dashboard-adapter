@@ -41,7 +41,10 @@ export function analyzeDashboard(data, states = {}) {
     if (typeof value.type === 'string' && (path.includes('cards') || path.includes('elements'))) cardCount++;
     for (const [key, item] of Object.entries(value)) {
       const itemPath = [...path, key];
-      if (ENTITY_KEYS.has(key)) collect(item, itemPath);
+      if (ENTITY_KEYS.has(key)) {
+        if (key === 'entity_id' && Array.isArray(item)) item.forEach((entry, index) => collect(entry, [...itemPath, index]));
+        else collect(item, itemPath);
+      }
       else if (LIST_KEYS.has(key) && Array.isArray(item)) {
         item.forEach((entry, index) => {
           if (typeof entry === 'string') collect(entry, [...itemPath, index]);
@@ -92,6 +95,7 @@ export function applyMappings(parsed, mappings) {
     for (const [key, value] of Object.entries(node)) {
       const current = [...path, key];
       if (ENTITY_KEYS.has(key) && typeof value === 'string') output[key] = replace(value, current);
+      else if (key === 'entity_id' && Array.isArray(value)) output[key] = value.map((entry, i) => typeof entry === 'string' ? replace(entry, [...current, i]) : rewrite(entry, [...current, i]));
       else if (LIST_KEYS.has(key) && Array.isArray(value)) {
         output[key] = value.map((entry, i) => typeof entry === 'string' ? replace(entry, [...current, i]) : rewrite(entry, [...current, i]));
       } else output[key] = rewrite(value, current);
