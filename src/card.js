@@ -1,4 +1,4 @@
-import { parseDashboard, analyzeDashboard, suggestEntities, applyMappings, entityStatus } from './dashboard.js';
+import { parseDashboard, analyzeDashboard, rankEntities, applyMappings, entityStatus, friendlyName } from './dashboard.js';
 import { translate, translateError } from './i18n.js';
 import { demoText, demoStates } from './demo.js';
 import { styles } from './styles.js';
@@ -6,6 +6,7 @@ import { styles } from './styles.js';
 const escape = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const pathLabel = (path) => path.map((part) => typeof part === 'number' ? `[${part}]` : part).join('.').replace(/\.\[/g, '[');
 const STATUS_ORDER = { missing: 0, unavailable: 1, ready: 2 };
+const DATALIST_SIZE = 50;
 
 class DashboardAdapterCard extends HTMLElement {
   constructor() {
@@ -203,9 +204,19 @@ class DashboardAdapterCard extends HTMLElement {
   }
 
   renderMapRow(item, t) {
-    const candidates = suggestEntities(item.id, this.states, 8);
+    const states = this.states;
+    const domain = item.id.split('.')[0];
+    const ranked = rankEntities(item.id, states, 8, item.names);
+    const suggested = ranked.map(({ id }) => id);
+    // Ranked suggestions first, then other entities of the domain so typing can still filter them.
+    const others = Object.keys(states).filter((id) => id !== item.id && id.startsWith(`${domain}.`) && !suggested.includes(id)).sort();
+    const options = [...suggested, ...others].slice(0, DATALIST_SIZE);
+    const label = (id) => friendlyName(states, id) ? ` label="${escape(friendlyName(states, id))}"` : '';
+    const best = ranked[0]?.confident ? ranked[0].id : '';
+    const hint = best && !this.mappings[item.id] ? `<button type="button" class="suggestion" data-apply="${escape(item.id)}" data-value="${escape(best)}" title="${escape(best)}">${t.suggestion} : ${escape(friendlyName(states, best) || best)}</button>` : '';
     const badge = item.status === 'missing' ? '' : ` <span class="badge ${item.status}">${t[item.status]}</span>`;
-    return `<div class="map-row"><div class="entity-info"><span class="entity-icon">↳</span><div><strong>${escape(item.id)}${badge}</strong><small>${item.paths.length} × · ${escape(pathLabel(item.paths[0]))}</small></div></div><div class="arrow">→</div><input data-map="${escape(item.id)}" list="choices-${escape(item.id)}" value="${escape(this.mappings[item.id] || '')}" placeholder="${t.choose}" aria-label="${t.choose}: ${escape(item.id)}"><datalist id="choices-${escape(item.id)}">${candidates.map((id) => `<option value="${escape(id)}"></option>`).join('')}</datalist></div>`;
+    const named = item.names.length ? ` · « ${escape(item.names[0])} »` : '';
+    return `<div class="map-row"><div class="entity-info"><span class="entity-icon">↳</span><div><strong>${escape(item.id)}${badge}</strong><small>${item.paths.length} × · ${escape(pathLabel(item.paths[0]))}${named}</small></div></div><div class="arrow">→</div><div class="map-input"><input data-map="${escape(item.id)}" list="choices-${escape(item.id)}" value="${escape(this.mappings[item.id] || '')}" placeholder="${t.choose}" aria-label="${t.choose}: ${escape(item.id)}"><datalist id="choices-${escape(item.id)}">${options.map((id) => `<option value="${escape(id)}"${label(id)}></option>`).join('')}</datalist>${hint}</div></div>`;
   }
 
   renderTab(report, t) {
@@ -239,6 +250,11 @@ class DashboardAdapterCard extends HTMLElement {
       if (replacement && replacement !== source && (!this.states[replacement] || replacement.split('.')[0] !== source.split('.')[0])) {
         this.error = translate(this.language).invalidMapping;
       } else { this.mappings[source] = replacement === source ? '' : replacement; this.error = ''; }
+      this.render();
+    }));
+    this.shadowRoot.querySelectorAll('[data-apply]').forEach((button) => button.addEventListener('click', () => {
+      this.mappings[button.dataset.apply] = button.dataset.value;
+      this.error = '';
       this.render();
     }));
     this.shadowRoot.querySelectorAll('[data-action]').forEach((button) => button.addEventListener('click', () => {

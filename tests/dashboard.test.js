@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseDashboard, analyzeDashboard, suggestEntities, applyMappings } from '../src/dashboard.js';
+import { parseDashboard, analyzeDashboard, suggestEntities, rankEntities, applyMappings } from '../src/dashboard.js';
 
 const source = `# shared dashboard\ntitle: Example\nviews:\n  - title: Main\n    cards:\n      - type: custom:mini-graph-card\n        entity: sensor.old_room\n        entities:\n          - light.old_room\n          - entity: switch.old_plug\n        tap_action:\n          action: toggle\n          target:\n            entity_id: light.old_room\n      - type: markdown\n        content: "{{ states('sensor.old_room') }}"\n`;
 const states = {
@@ -87,4 +87,33 @@ test('rewrites present entities in JSON and keeps unmapped ones', () => {
   const parsed = parseDashboard('{"views":[{"cards":[{"type":"entities","entities":["light.new_room","sensor.new_room",{"entity":"light.new_room"}]}]}]}', 'a.json');
   const output = JSON.parse(applyMappings(parsed, { 'light.new_room': 'light.other' }).text);
   assert.deepEqual(output.views[0].cards[0].entities, ['light.other', 'sensor.new_room', { entity: 'light.other' }]);
+});
+
+test('suggests replacements from friendly names, card names and word prefixes', () => {
+  const home = {
+    'sensor.0x58e6_ip_address': { state: '1', attributes: { friendly_name: 'Zigbee IP address' } },
+    'sensor.thermo_1': { state: '21', attributes: { friendly_name: 'Salon température' } },
+    'sensor.salon_temp': { state: '21', attributes: { friendly_name: 'Thermomètre salon' } },
+    'sensor.cyberpower_charge_de_la_batterie': { state: '100', attributes: { friendly_name: 'CyberPower Charge de la batterie' } },
+  };
+  const parsed = parseDashboard('views:\n  - cards:\n      - type: entities\n        entities:\n          - entity: sensor.living_room_temperature\n            name: Température du salon\n      - type: gauge\n        entity: sensor.ups_battery_charge\n      - type: tile\n        entity: sensor.unrelated_widget\n', 'a.yaml');
+  const [temperature, battery, unrelated] = analyzeDashboard(parsed.data, home).entities;
+  assert.deepEqual(temperature.names, ['Température du salon']);
+  assert.deepEqual(suggestEntities(temperature.id, home, 2, temperature.names), ['sensor.thermo_1', 'sensor.salon_temp']);
+  assert.equal(suggestEntities(battery.id, home, 1)[0], 'sensor.cyberpower_charge_de_la_batterie');
+  assert.deepEqual(suggestEntities(unrelated.id, home, 8), []);
+});
+
+test('offers a one-click suggestion only for a clear match', () => {
+  const home = {
+    'sensor.robot_drying_left': { state: '1', attributes: { friendly_name: 'Robot drying left' } },
+    'sensor.kitchen_status': { state: 'ok', attributes: { friendly_name: 'Kitchen status' } },
+    'sensor.office_status': { state: 'ok', attributes: { friendly_name: 'Office status' } },
+    'sensor.ups_battery_charge_2': { state: '100', attributes: { friendly_name: 'UPS battery charge' } },
+  };
+  assert.equal(rankEntities('sensor.ups_battery_charge', home, 3)[0].confident, true);
+  // A leftover entity of a removed device shares only the device name.
+  const leftover = rankEntities('sensor.robot_cleaning_status', home, 3);
+  assert.equal(leftover[0].id, 'sensor.robot_drying_left');
+  assert.equal(leftover[0].confident, false);
 });

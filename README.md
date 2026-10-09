@@ -221,7 +221,12 @@ The **Compatibility** score is the number of Ready entities divided by the numbe
 
 ### Replacement suggestions
 
-Suggestions come from your own entities with the same domain, ranked by the words they share with the missing ID (for example `living`, `room`, `temperature`). Up to eight suggestions are shown. They are suggestions, not confirmed device matches: check that the proposed entity really plays the same role.
+Suggestions come from your own entities with the same domain. The card compares the words of the missing reference (its ID and the `name` given in the card) with the ID and **friendly name** of each of your entities, ignoring accents and letting `temp` match `temperature`. Rare words, such as a device name, count more than common ones such as `status` or `battery`; words that none of your entities use, such as another home's room names, are left out.
+
+- The replacement field lists the best matches first, with their friendly name, followed by other entities of the same domain so you can filter them by typing.
+- When one entity clearly stands out, a **Suggestion** link under the field applies it in one click. It only appears when most words match exactly and no other entity comes close.
+
+They are suggestions, not confirmed device matches: check that the proposed entity really plays the same role. A device that was removed can leave entities with the same name behind.
 
 A replacement is refused if the entity does not exist or belongs to another domain.
 

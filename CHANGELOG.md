@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Smarter replacement suggestions: friendly names and card `name` fields are compared, accents ignored, word prefixes matched, and rare words weigh more than common ones.
+- Replacement fields list friendly names and other entities of the same domain.
+- One-click **Suggestion** link when a single entity clearly matches.
+
 ## 0.1.0-beta.3
 
 - Keep the replacement being typed, focus and scroll position when Home Assistant pushes state updates; redraw only when a referenced entity changes status.

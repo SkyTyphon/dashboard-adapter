@@ -221,7 +221,12 @@ Le score de **Compatibilité** correspond au nombre d’entités présentes divi
 
 ### Suggestions de remplacement
 
-Les suggestions viennent de tes propres entités du même domaine, classées selon les mots qu’elles partagent avec l’identifiant absent (par exemple `living`, `room`, `temperature`). Jusqu’à huit suggestions sont affichées. Elles ne garantissent pas que l’appareil proposé corresponde au bon usage : vérifie que l’entité joue bien le même rôle.
+Les suggestions viennent de tes propres entités du même domaine. La carte compare les mots de la référence absente (son identifiant et le `name` indiqué dans la carte) avec l’identifiant et le **nom affiché** de chacune de tes entités, sans tenir compte des accents et en rapprochant `temp` de `temperature`. Les mots rares, comme un nom d’appareil, comptent plus que les mots courants comme `status` ou `battery` ; les mots qu’aucune de tes entités n’utilise, comme les noms de pièces d’une autre maison, sont ignorés.
+
+- Le champ de remplacement liste d’abord les meilleures correspondances, avec leur nom affiché, puis les autres entités du même domaine pour pouvoir les filtrer en tapant.
+- Quand une entité se détache nettement, un lien **Suggestion** sous le champ l’applique en un clic. Il n’apparaît que si la plupart des mots correspondent exactement et qu’aucune autre entité n’est proche.
+
+Elles ne garantissent pas que l’appareil proposé corresponde au bon usage : vérifie que l’entité joue bien le même rôle. Un appareil supprimé peut laisser derrière lui des entités au nom identique.
 
 Un remplacement est refusé si l’entité n’existe pas ou appartient à un autre domaine.
 

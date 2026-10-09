@@ -54,11 +54,13 @@ try {
   live.on('pageerror', (error) => errors.push(error.message));
   await live.goto(liveUrl ? `${origin}/` : `${origin}/demo/index.html`, { waitUntil: 'networkidle' });
   const card = live.locator('dashboard-adapter-card');
-  const states = (extra = {}) => ({ 'light.salon': { state: 'on' }, 'light.kitchen': { state: 'on' }, 'sensor.power': { state: String(Math.random()) }, ...extra });
+  const states = (extra = {}) => ({ 'light.salon': { state: 'on' }, 'light.kitchen': { state: 'on' }, 'light.lamp_2': { state: 'on', attributes: { friendly_name: 'Living room lamp' } }, 'sensor.power': { state: String(Math.random()) }, ...extra });
   await card.evaluate((element, value) => { element.setConfig({ language: 'en' }); element.hass = { language: 'en', states: value }; }, states());
   const yaml = 'base: &lamp\n  type: button\n  entity: light.living_room\nviews:\n  - cards:\n      - *lamp\n      - <<: *lamp\n        name: Copy\n      - type: tile\n        entity: light.kitchen\n';
   await card.locator('input[type=file]').setInputFiles({ name: 'shared.yaml', mimeType: 'text/yaml', buffer: Buffer.from(yaml) });
   await card.locator('[data-tab=mapping]').click();
+  assert.match(await card.locator('button[data-apply="light.living_room"]').innerText(), /Living room lamp/);
+  assert.match(await card.locator('datalist[id="choices-light.living_room"] option').first().getAttribute('value'), /light\.lamp_2/);
   const input = card.locator('input[data-map="light.living_room"]');
   await input.click();
   await input.pressSequentially('light.sal');

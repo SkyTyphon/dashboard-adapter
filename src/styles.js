@@ -13,4 +13,6 @@ export const styles = `
 .error.inline,.notice.inline{margin:0 0 12px}
 .export-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.export-actions button:not(.primary){border:1px solid var(--divider-color,#435261);border-radius:8px;background:transparent;color:var(--da-text);padding:10px 14px;font-size:11px;font-weight:800;white-space:nowrap}button:disabled{opacity:.45;cursor:not-allowed}
 .map-row strong .badge{margin-left:6px;font-weight:600}
+.map-input{width:43%;min-width:160px;display:flex;flex-direction:column;align-items:flex-start;gap:5px}.map-row .map-input input{width:100%;min-width:0}.suggestion{max-width:100%;background:none;border:0;padding:0;color:var(--da-accent-text);font-size:10px;font-weight:700;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.suggestion:hover{text-decoration:underline}
+@media(max-width:750px){.map-input{width:100%}}
 `;
