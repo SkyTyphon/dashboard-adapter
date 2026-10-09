@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0-beta.3
 
 - Keep the replacement being typed, focus and scroll position when Home Assistant pushes state updates; redraw only when a referenced entity changes status.
 - Support YAML anchors, aliases and merge keys when rewriting entities.
