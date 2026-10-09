@@ -47,8 +47,39 @@ try {
   const width = await page.evaluate(() => document.documentElement.scrollWidth);
   assert(width <= 391, `Mobile page overflows: ${width}px`);
   await page.screenshot({ path: 'preview/demo-mobile.png', fullPage: true });
+
+  // Real import with live Home Assistant state updates.
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, permissions: ['clipboard-read', 'clipboard-write'] });
+  const live = await context.newPage();
+  live.on('pageerror', (error) => errors.push(error.message));
+  await live.goto(liveUrl ? `${origin}/` : `${origin}/demo/index.html`, { waitUntil: 'networkidle' });
+  const card = live.locator('dashboard-adapter-card');
+  const states = (extra = {}) => ({ 'light.salon': { state: 'on' }, 'light.kitchen': { state: 'on' }, 'sensor.power': { state: String(Math.random()) }, ...extra });
+  await card.evaluate((element, value) => { element.setConfig({ language: 'en' }); element.hass = { language: 'en', states: value }; }, states());
+  const yaml = 'base: &lamp\n  type: button\n  entity: light.living_room\nviews:\n  - cards:\n      - *lamp\n      - <<: *lamp\n        name: Copy\n      - type: tile\n        entity: light.kitchen\n';
+  await card.locator('input[type=file]').setInputFiles({ name: 'shared.yaml', mimeType: 'text/yaml', buffer: Buffer.from(yaml) });
+  await card.locator('[data-tab=mapping]').click();
+  const input = card.locator('input[data-map="light.living_room"]');
+  await input.click();
+  await input.pressSequentially('light.sal');
+  for (let update = 0; update < 5; update++) await card.evaluate((element, value) => { element.hass = { language: 'en', states: value }; }, states());
+  await card.evaluate((element, value) => { element.hass = { language: 'en', states: value }; }, states({ 'light.kitchen': { state: 'unavailable' } }));
+  assert.equal(await input.inputValue(), 'light.sal', 'typed replacement lost on state update');
+  assert(await input.evaluate((element) => element.getRootNode().activeElement === element), 'replacement field lost focus on state update');
+  await input.pressSequentially('on');
+  await input.press('Enter');
+  await card.locator('[data-action=toggle-all]').click();
+  assert.equal(await card.locator('input[data-map="light.kitchen"]').count(), 1);
+  await card.locator('[data-tab=preview]').click();
+  assert.match(await card.locator('pre[data-scroll=adapted]').innerText(), /entity: light\.salon[\s\S]*<<: \*lamp/);
+  await card.locator('[data-action=copy]').click();
+  await card.locator('[data-action=copy]', { hasText: 'Copied' }).waitFor();
+  assert.match(await live.evaluate(() => navigator.clipboard.readText()), /entity: light\.salon/);
+  await card.locator('input[type=file]').setInputFiles({ name: 'tagged.yaml', mimeType: 'text/yaml', buffer: Buffer.from('views:\n  - cards:\n      - !include card.yaml\n') });
+  assert.match(await card.locator('.error').innerText(), /Unsupported YAML tag/);
+  await context.close();
   assert.deepEqual(errors, []);
-  console.log('Browser demo: desktop, mapping, download, French, light theme and mobile passed');
+  console.log('Browser demo: desktop, mapping, download, French, light theme, mobile, live state updates, anchors, remapping, copy and tag errors passed');
 } finally {
   await browser?.close();
   server?.kill();

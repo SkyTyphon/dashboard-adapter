@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- Keep the replacement being typed, focus and scroll position when Home Assistant pushes state updates; redraw only when a referenced entity changes status.
+- Support YAML anchors, aliases and merge keys when rewriting entities.
+- Refuse unresolved YAML tags such as `!include` and `!secret` with a translated message.
+- Show translated export errors in the preview and disable export while they remain.
+- Count only real cards (tile features and picture elements excluded).
+- Detect button-card JavaScript templates (`[[[ ]]]`) alongside Jinja.
+- Allow replacing present and unavailable entities from a secondary list.
+- Add a **Copy** button with a fallback for Home Assistant served over plain HTTP.
+- Cache analysis and preview between redraws.
+- Theme-aware accent colors for light Home Assistant themes.
+
 ## 0.1.0-beta.2
 
 - Separate English and French demo URLs with matching documentation links.

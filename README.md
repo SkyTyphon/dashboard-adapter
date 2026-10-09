@@ -64,9 +64,10 @@ This is a **Lovelace card**, distributed through HACS as a **Dashboard** plugin.
 - **Dependency inventory**: every entity reference, its location in the dashboard, and every `custom:*` card type.
 - **Compatibility score**: share of referenced entities that exist and are available in your Home Assistant.
 - **Entity mapping** with same-domain suggestions taken from your own entities.
-- **Side-by-side preview** of the original and adapted files before download.
+- **Side-by-side preview** of the original and adapted files, then **Download** or **Copy** the result.
 - **Safe rewrite**: only explicit entity fields change; YAML comments are preserved where possible.
-- **Template detection**: Jinja expressions (`{{ }}` and `{% %}`) are counted so you can review them manually.
+- **Template detection**: Jinja (`{{ }}`, `{% %}`) and button-card JavaScript (`[[[ ]]]`) templates are counted so you can review them manually.
+- **YAML anchors and merge keys** (`&name`, `*name`, `<<:`) are supported; an anchored entity is replaced once and every alias follows.
 - **English and French interface**, following the Home Assistant language automatically.
 - **Built-in demo mode** with fictional entities, available directly in the card.
 - **Fully local**: no upload, no backend, no change to your Home Assistant configuration.
@@ -136,9 +137,9 @@ The card works best on a wide view, for example a panel or sections view: it occ
 3. Read **Dependencies**. Install listed custom cards separately.
 4. Open **Entity mapping**. Choose a suggestion or type an existing entity ID of the same domain. For example, replace a `light.*` entity with another `light.*` entity.
 5. Open **Export preview** and check both files. Unresolved references remain visible in the exported copy.
-6. Click **Download**. Back up the destination dashboard, then import the adapted configuration through Home Assistant's normal editor.
+6. Click **Download**, or **Copy** to put the adapted configuration on the clipboard. Back up the destination dashboard, then import the adapted configuration through Home Assistant's normal editor.
 
-To import the result, open the destination dashboard, choose **Edit dashboard → ⋮ → Raw configuration editor**, replace the content with the downloaded file and save. Keep a copy of the previous configuration first.
+To import the result, open the destination dashboard, choose **Edit dashboard → ⋮ → Raw configuration editor**, replace the content with the downloaded or copied configuration and save. **Copy** is handy in the Home Assistant mobile app, where file downloads can be limited. Keep a copy of the previous configuration first.
 
 ### Interface overview
 
@@ -147,8 +148,8 @@ To import the result, open the destination dashboard, choose **Edit dashboard �
 | Toolbar | File name, **Import dashboard**, **Try demo** and **Clear** buttons. |
 | Summary | **Compatibility** score, number of views, cards and entities, plus Ready / Missing / Unavailable counters. |
 | **Dependencies** tab | Every referenced entity with its status and location, detected custom cards and template expressions. |
-| **Entity mapping** tab | One row per missing entity, with a replacement field and suggestions. The tab title shows resolved / missing. |
-| **Export preview** tab | Original and adapted files side by side, number of changes, warning for unresolved references and **Download** button. |
+| **Entity mapping** tab | One row per missing entity, with a replacement field and suggestions. The tab title shows resolved / missing. A link also reveals present and unavailable entities so you can replace them too. |
+| **Export preview** tab | Original and adapted files side by side, number of changes, warning for unresolved references, **Copy** and **Download** buttons. |
 
 Locations use a readable path such as `views[0].cards[2].entity`, so you can find each reference in the source file.
 
@@ -211,8 +212,8 @@ Every occurrence of the same entity ID is replaced by the same choice.
 | Status | Meaning |
 | --- | --- |
 | **Ready** | The entity exists and has a normal state. |
-| **Unavailable** | The entity exists but its state is `unknown` or `unavailable`. It is not offered for mapping. |
-| **Missing** | No state with this ID is visible to the current session. It can be mapped. |
+| **Unavailable** | The entity exists but its state is `unknown` or `unavailable`. It can be replaced from the hidden list in **Entity mapping**. |
+| **Missing** | No state with this ID is visible to the current session. It is listed first in **Entity mapping**. |
 
 Entity presence is checked against states available to the current Home Assistant frontend session. A missing state does not prove that an entity has been deleted; check **Developer Tools → States** if needed.
 
@@ -228,7 +229,7 @@ A replacement is refused if the entity does not exist or belongs to another doma
 
 The card lists `custom:*` types, but cannot confirm whether their resources are installed. Install them separately, usually through HACS.
 
-Review template expressions manually: entity IDs inside Jinja, JavaScript, Markdown, CSS and arbitrary custom card fields are not rewritten. The number of fields containing Jinja is shown in **Dependencies**.
+Review template expressions manually: entity IDs inside Jinja, JavaScript, Markdown, CSS and arbitrary custom card fields are not rewritten. The number of fields containing Jinja or button-card JavaScript templates is shown in **Dependencies**.
 
 ### Exported file
 
@@ -245,7 +246,7 @@ Review private URLs or tokens in your source dashboard before sharing an export:
 
 Not supported:
 
-- YAML `!include`, `!secret` and other Home Assistant YAML tags.
+- YAML `!include`, `!secret` and other Home Assistant YAML tags. The import is refused with an explicit message.
 - Dashboards split across multiple files.
 - Single cards or single views without the complete dashboard structure.
 - Entity IDs inside templates or card-specific free text fields.
@@ -256,7 +257,8 @@ Not supported:
 | Problem | What to check |
 | --- | --- |
 | Card not found / “Custom element doesn't exist” | JavaScript resource registered as a module, file downloaded, browser refreshed with cache cleared. |
-| Import rejected | Complete dashboard with a root `views` array; valid YAML/JSON; no duplicate keys or unsupported tags; file under 2 MB. |
+| Import rejected | Complete dashboard with a root `views` array; valid YAML/JSON; no duplicate keys or unsupported tags such as `!include`; file under 2 MB. |
+| Download does nothing (mobile app) | Use **Copy** and paste into the raw configuration editor. |
 | Replacement rejected | Existing entity ID, same domain as the source reference. |
 | No suggestion | No entity of the same domain exists, or you are in demo mode with fictional entities. Type the ID manually. |
 | All entities shown as missing | The card is displayed outside Home Assistant or the session has no state access. Structure checks still work. |
@@ -275,7 +277,7 @@ No. The file is read and processed in your browser.
 Yes, but suggestions and availability checks use the entities of the Home Assistant instance where the card runs.
 
 **Why is an entity marked unavailable and not missing?**
-It exists in your instance but currently reports `unknown` or `unavailable`. Check the device or integration instead of replacing it.
+It exists in your instance but currently reports `unknown` or `unavailable`. Check the device or integration first. If it is really the wrong entity, reveal it in **Entity mapping** and replace it.
 
 **Does it work with YAML-mode dashboards?**
 Yes, if you provide the complete configuration in one file without `!include` or other YAML tags.

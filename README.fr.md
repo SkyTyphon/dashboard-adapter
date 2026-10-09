@@ -64,9 +64,10 @@ C’est une **carte Lovelace**, distribuée dans HACS en catégorie **Dashboard*
 - **Inventaire des dépendances** : chaque référence d’entité, son emplacement dans le dashboard et chaque type de carte `custom:*`.
 - **Score de compatibilité** : part des entités référencées qui existent et sont disponibles dans ton Home Assistant.
 - **Correspondance des entités** avec des suggestions du même domaine, tirées de tes propres entités.
-- **Aperçu côte à côte** des fichiers original et adapté avant téléchargement.
+- **Aperçu côte à côte** des fichiers original et adapté, puis **Télécharger** ou **Copier** le résultat.
 - **Réécriture prudente** : seuls les champs explicites d’entité changent ; les commentaires YAML sont conservés lorsque possible.
-- **Détection des modèles** : les expressions Jinja (`{{ }}` et `{% %}`) sont comptées pour que tu les vérifies toi-même.
+- **Détection des modèles** : les modèles Jinja (`{{ }}`, `{% %}`) et JavaScript de button-card (`[[[ ]]]`) sont comptés pour que tu les vérifies toi-même.
+- **Ancres et fusions YAML** (`&nom`, `*nom`, `<<:`) prises en charge : une entité ancrée est remplacée une fois et tous les alias suivent.
 - **Interface en français et en anglais**, qui suit automatiquement la langue de Home Assistant.
 - **Mode démo intégré** avec des entités fictives, accessible directement dans la carte.
 - **Entièrement local** : aucun envoi, aucun serveur, aucune modification de ta configuration Home Assistant.
@@ -136,9 +137,9 @@ La carte est plus confortable dans une vue large, par exemple une vue panneau ou
 3. Consulte **Dépendances**. Installe séparément les cartes personnalisées indiquées.
 4. Ouvre **Correspondance des entités**. Choisis une suggestion ou saisis l’identifiant d’une entité existante du même domaine. Une lumière `light.*` doit être remplacée par une autre lumière `light.*`.
 5. Ouvre **Aperçu de l’export** et vérifie les deux fichiers. Les références non résolues restent dans la copie exportée.
-6. Clique sur **Télécharger**. Sauvegarde le dashboard de destination, puis importe la copie dans l’éditeur habituel de Home Assistant.
+6. Clique sur **Télécharger**, ou sur **Copier** pour mettre la configuration adaptée dans le presse-papiers. Sauvegarde le dashboard de destination, puis importe la copie dans l’éditeur habituel de Home Assistant.
 
-Pour importer le résultat, ouvre le dashboard de destination, choisis **Modifier le tableau de bord → ⋮ → Éditeur de configuration brute**, remplace le contenu par le fichier téléchargé et enregistre. Garde d’abord une copie de l’ancienne configuration.
+Pour importer le résultat, ouvre le dashboard de destination, choisis **Modifier le tableau de bord → ⋮ → Éditeur de configuration brute**, remplace le contenu par la configuration téléchargée ou copiée et enregistre. **Copier** est pratique dans l’application mobile Home Assistant, où les téléchargements peuvent être limités. Garde d’abord une copie de l’ancienne configuration.
 
 ### Présentation de l’interface
 
@@ -147,8 +148,8 @@ Pour importer le résultat, ouvre le dashboard de destination, choisis **Modifie
 | Barre d’outils | Nom du fichier, boutons **Importer un dashboard**, **Essayer la démo** et **Effacer**. |
 | Résumé | Score de **Compatibilité**, nombre de vues, cartes et entités, compteurs Présentes / Absentes / Indisponibles. |
 | Onglet **Dépendances** | Chaque entité référencée avec son état et son emplacement, les cartes personnalisées et les expressions de modèle détectées. |
-| Onglet **Correspondance des entités** | Une ligne par entité absente, avec un champ de remplacement et des suggestions. Le titre de l’onglet indique résolues / absentes. |
-| Onglet **Aperçu de l’export** | Fichiers original et adapté côte à côte, nombre de modifications, alerte pour les références non résolues et bouton **Télécharger**. |
+| Onglet **Correspondance des entités** | Une ligne par entité absente, avec un champ de remplacement et des suggestions. Le titre de l’onglet indique résolues / absentes. Un lien affiche aussi les entités présentes et indisponibles pour les remplacer si besoin. |
+| Onglet **Aperçu de l’export** | Fichiers original et adapté côte à côte, nombre de modifications, alerte pour les références non résolues, boutons **Copier** et **Télécharger**. |
 
 Les emplacements utilisent un chemin lisible comme `views[0].cards[2].entity`, pour retrouver chaque référence dans le fichier source.
 
@@ -211,8 +212,8 @@ Toutes les occurrences d’un même identifiant sont remplacées par le même ch
 | État | Signification |
 | --- | --- |
 | **Présente** | L’entité existe et a un état normal. |
-| **Indisponible** | L’entité existe mais son état est `unknown` ou `unavailable`. Elle n’est pas proposée au remplacement. |
-| **Absente** | Aucun état avec cet identifiant n’est visible pour la session. Elle peut être remplacée. |
+| **Indisponible** | L’entité existe mais son état est `unknown` ou `unavailable`. Elle peut être remplacée depuis la liste masquée de **Correspondance des entités**. |
+| **Absente** | Aucun état avec cet identifiant n’est visible pour la session. Elle apparaît en premier dans **Correspondance des entités**. |
 
 La présence d’une entité est vérifiée dans les états accessibles à la session frontend Home Assistant. Un état absent ne prouve pas que l’entité a été supprimée ; vérifie **Outils de développement → États** si nécessaire.
 
@@ -228,7 +229,7 @@ Un remplacement est refusé si l’entité n’existe pas ou appartient à un au
 
 La carte liste les types `custom:*`, sans confirmer l’installation de leurs ressources. Installe-les séparément, en général avec HACS.
 
-Les modèles doivent être vérifiés manuellement : les identifiants intégrés dans Jinja, JavaScript, Markdown, CSS ou des champs propres à certaines cartes ne sont pas réécrits. Le nombre de champs contenant du Jinja est affiché dans **Dépendances**.
+Les modèles doivent être vérifiés manuellement : les identifiants intégrés dans Jinja, JavaScript, Markdown, CSS ou des champs propres à certaines cartes ne sont pas réécrits. Le nombre de champs contenant des modèles Jinja ou JavaScript de button-card est affiché dans **Dépendances**.
 
 ### Fichier exporté
 
@@ -245,7 +246,7 @@ Vérifie les URL privées ou les jetons présents avant de partager un export : 
 
 Non pris en charge :
 
-- Les directives YAML `!include`, `!secret` et les autres tags Home Assistant.
+- Les directives YAML `!include`, `!secret` et les autres tags Home Assistant. L’import est refusé avec un message explicite.
 - Les dashboards répartis en plusieurs fichiers.
 - Une carte ou une vue seule, sans la structure complète du dashboard.
 - Les identifiants dans les modèles ou dans les champs de texte libre propres à certaines cartes.
@@ -256,7 +257,8 @@ Non pris en charge :
 | Problème | Vérification |
 | --- | --- |
 | Carte introuvable | Ressource enregistrée comme module JavaScript, fichier téléchargé, navigateur actualisé en vidant le cache. |
-| Import refusé | Dashboard complet avec `views` à la racine ; YAML/JSON valide ; aucune clé en double ni tag non pris en charge ; fichier de moins de 2 Mo. |
+| Import refusé | Dashboard complet avec `views` à la racine ; YAML/JSON valide ; aucune clé en double ni tag non pris en charge comme `!include` ; fichier de moins de 2 Mo. |
+| Le téléchargement ne fait rien (application mobile) | Utilise **Copier** puis colle dans l’éditeur de configuration brute. |
 | Remplacement refusé | Entité existante et du même domaine que la référence source. |
 | Aucune suggestion | Aucune entité du même domaine n’existe, ou tu es en mode démo avec des entités fictives. Saisis l’identifiant à la main. |
 | Toutes les entités sont absentes | La carte est affichée hors de Home Assistant ou la session n’a pas accès aux états. Les contrôles de structure fonctionnent quand même. |
@@ -275,7 +277,7 @@ Non. Le fichier est lu et traité dans ton navigateur.
 Oui, mais les suggestions et la disponibilité utilisent les entités de l’instance Home Assistant où la carte tourne.
 
 **Pourquoi une entité est-elle indisponible et pas absente ?**
-Elle existe dans ton instance mais renvoie actuellement `unknown` ou `unavailable`. Vérifie l’appareil ou l’intégration plutôt que de la remplacer.
+Elle existe dans ton instance mais renvoie actuellement `unknown` ou `unavailable`. Vérifie d’abord l’appareil ou l’intégration. Si c’est vraiment la mauvaise entité, affiche-la dans **Correspondance des entités** et remplace-la.
 
 **Est-ce compatible avec les dashboards en mode YAML ?**
 Oui, si tu fournis la configuration complète dans un seul fichier, sans `!include` ni autre tag YAML.
