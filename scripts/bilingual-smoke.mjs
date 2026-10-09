@@ -72,4 +72,3 @@ try {
   }
   console.log('EN/FR pages, forced languages, HA auto language, export, localized errors, mobile and language navigation passed');
 } finally { await browser.close(); server?.kill(); }
-
