@@ -156,10 +156,8 @@ Locations use a readable path such as `views[0].cards[2].entity`, so you can fin
 
 ### Card options
 
-| Option | Values | Default | Description |
-| --- | --- | --- | --- |
-| `type` | `custom:dashboard-adapter-card` | required | Card type. |
-| `language` | `auto`, `en`, `fr` | `auto` | Interface language. Any other value is rejected by the card editor. |
+- **`type`** (required): `custom:dashboard-adapter-card`.
+- **`language`** (optional): `auto` (default), `en` or `fr`. Interface language. Any other value is rejected by the card editor.
 
 The card has no other options: everything else happens inside the card.
 

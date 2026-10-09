@@ -156,10 +156,8 @@ Les emplacements utilisent un chemin lisible comme `views[0].cards[2].entity`, p
 
 ### Options de la carte
 
-| Option | Valeurs | Par défaut | Description |
-| --- | --- | --- | --- |
-| `type` | `custom:dashboard-adapter-card` | obligatoire | Type de carte. |
-| `language` | `auto`, `en`, `fr` | `auto` | Langue de l’interface. Toute autre valeur est refusée par l’éditeur de carte. |
+- **`type`** (obligatoire) : `custom:dashboard-adapter-card`.
+- **`language`** (facultatif) : `auto` (par défaut), `en` ou `fr`. Langue de l’interface. Toute autre valeur est refusée par l’éditeur de carte.
 
 La carte n’a pas d’autre option : tout le reste se fait dans la carte.
 
